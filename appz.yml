@@ -4,11 +4,11 @@
         notify: apaul@ecloudcontrol.com
 
     build:
-        version: 25.4
+        version: 25.6
         env: DEV
         build_file: none
         output_files: output/*.zip
-        image_template: clickhousecluster-25.4
+        image_template: clickhousecluster-25.6
 
     deploy:
         context: alpha/DEV
@@ -16,7 +16,7 @@
         replicas: 1
         resources: x-large
         port:
-        - 8081
+        - 9116
 
     volumes:
       - claim: clickhouse-data
@@ -36,7 +36,7 @@
           vault: CLICKHOUSE_PASSWORD
         CLICKHOUSE_NODES: 0@clickhousecluster-0:9000
         KEEPER_NODES: clickhousecluster-0:9181
-        REPLICATION_FACTOR: 5
+        REPLICATION_FACTOR: 1
         FLINK_LOG_DIR: /appz/log
         SHARD_COUNT: 1
         ENABLE_FLUENTD: 1
