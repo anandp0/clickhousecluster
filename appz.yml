@@ -1,50 +1,42 @@
-    app:
-        name: ClickHouseCluster
-        code: clickhousecluster
-        notify: anand@maximaconsulting.com
+app:
+    name: ClickHouseCluster
+    code: clickhousecluster
+    notify: anand@maximaconsulting.com
 
-    build:
-        version: 25.6
-        env: PROD
-        build_file: none
-        output_files: output/*.zip
-        image_template: clickhousecluster-25.6
+build:
+    version: 25.6
+    env: DEV
+    build_file: none
+    output_files: output/*.zip
+    image_template: clickhousecluster-25.6
 
-    deploy:
-        context: vv/PROD
-        type: statefulset
-        replicas: 3
-        resources: x-large
-        port:
-        - 8123
-        - 9000
-        - 9363
+deploy:
+    context: anandp0/DEV
+    type: statefulset
+    replicas: 3
+    resources: x-large
+    port:
+    - 8123
+    - 9000
+    - 9363
 
-    volumes:
-      - claim: clickhouse-data
-        class: linode-block-storage
-        mount: /appz/data
-        name: data
-        size: 200Gi
-        matchLabels: false
+volumes:
+  - claim: clickhouse-data
+    class: linode-block-storage
+    mount: /appz/data
+    name: data
+    size: 200Gi
+    matchLabels: false
 
+properties:
+    CLICKHOUSE_NODES: 0@clickhousecluster-25-6-0.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000,1@clickhousecluster-25-6-1.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000
+    CLICKHOUSE_CLUSTER_NAME: clickhousecluster
+    CLICKHOUSE_USER: default
+    CLICKHOUSE_PASSWORD:
+        vault: CLICKHOUSE_PASSWORD
 
-    properties:
-        CLICKHOUSE_CLUSTER_NAME: clickhousecluster
-        CLICKHOUSE_USER: default
-        CLICKHOUSE_PASSWORD:
-          vault: CLICKHOUSE_PASSWORD
-        AKAMAI_ACCESS_KEY:
-          vault: AKAMAI_ACCESS_KEY
-        AKAMAI_SECRET_KEY:
-          vault: AKAMAI_SECRET_KEY
-        AKAMAI_BUCKET: vv-dev-bucket
-        AKAMAI_ENDPOINT: https://us-ord-1.linodeobjects.com
-        AKAMAI_REGION: us-central-1
-        CLICKHOUSE_NODES: 0@clickhousecluster-25-6-0.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000,1@clickhousecluster-25-6-1.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000,2@clickhousecluster-25-6-2.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000
-        KEEPER_NODES: clickhousecluster-25-6-0.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181,clickhousecluster-25-6-1.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181,clickhousecluster-25-6-2.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181
-        REPLICATION_FACTOR: 3
-        FLINK_LOG_DIR: /appz/log
-        SHARD_COUNT: 1
-        ENABLE_FLUENTD: 1
-        revision : 14
+    KEEPER_NODES: clickhousecluster-25-6-0.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181,clickhousecluster-25-6-1.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181
+    REPLICATION_FACTOR: 2
+    SHARD_COUNT: 1
+    ENABLE_FLUENTD: 1
+    revision: 14
