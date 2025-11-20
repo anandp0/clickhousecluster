@@ -1,43 +1,50 @@
     app:
         name: ClickHouseCluster
         code: clickhousecluster
-        notify: apaul@ecloudcontrol.com
+        notify: anand@maximaconsulting.com
 
     build:
         version: 25.6
-        env: DEV
+        env: PROD
         build_file: none
         output_files: output/*.zip
         image_template: clickhousecluster-25.6
 
     deploy:
-        context: anandp0/DEV
+        context: vv/PROD
         type: statefulset
-        replicas: 1
+        replicas: 3
         resources: x-large
         port:
-        - 9116
+        - 8123
+        - 9000
+        - 9363
 
     volumes:
       - claim: clickhouse-data
+        class: linode-block-storage
         mount: /appz/data
         name: data
-        size: 5Gi
+        size: 200Gi
         matchLabels: false
-      # - claim: mysql-backup
-      #   mount: /appz/backup
-      #   name: backup
-      #   size: 5Gi
+
 
     properties:
-        CLICKHOUSE_CLUSTER_NAME: mmch
+        CLICKHOUSE_CLUSTER_NAME: clickhousecluster
         CLICKHOUSE_USER: default
         CLICKHOUSE_PASSWORD:
           vault: CLICKHOUSE_PASSWORD
-        CLICKHOUSE_NODES: 0@clickhousecluster-0:9000
-        KEEPER_NODES: clickhousecluster-0:9181
-        REPLICATION_FACTOR: 1
+        AKAMAI_ACCESS_KEY:
+          vault: AKAMAI_ACCESS_KEY
+        AKAMAI_SECRET_KEY:
+          vault: AKAMAI_SECRET_KEY
+        AKAMAI_BUCKET: vv-dev-bucket
+        AKAMAI_ENDPOINT: https://us-ord-1.linodeobjects.com
+        AKAMAI_REGION: us-central-1
+        CLICKHOUSE_NODES: 0@clickhousecluster-25-6-0.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000,1@clickhousecluster-25-6-1.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000,2@clickhousecluster-25-6-2.clickhousecluster-25-6.vv-prod.svc.cluster.local:9000
+        KEEPER_NODES: clickhousecluster-25-6-0.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181,clickhousecluster-25-6-1.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181,clickhousecluster-25-6-2.clickhousecluster-25-6.vv-prod.svc.cluster.local:9181
+        REPLICATION_FACTOR: 3
         FLINK_LOG_DIR: /appz/log
         SHARD_COUNT: 1
         ENABLE_FLUENTD: 1
-        revision : 19
+        revision : 14
