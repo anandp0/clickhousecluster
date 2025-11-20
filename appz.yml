@@ -39,4 +39,4 @@ properties:
     REPLICATION_FACTOR: 2
     SHARD_COUNT: 1
     ENABLE_FLUENTD: 1
-    revision: 19
+    revision: 20
